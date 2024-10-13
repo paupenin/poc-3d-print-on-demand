@@ -17,7 +17,7 @@ import { type AdapterAccount } from "next-auth/adapters";
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = pgTableCreator((name) => `poc-3d-print-on-demand_${name}`);
+export const createTable = pgTableCreator((name) => `poc_${name}`);
 
 export const posts = createTable(
   "post",

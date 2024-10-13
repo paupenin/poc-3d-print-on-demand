@@ -8,5 +8,5 @@ export default {
   dbCredentials: {
     url: env.DATABASE_URL,
   },
-  tablesFilter: ["poc-3d-print-on-demand_*"],
+  tablesFilter: ["poc_*"],
 } satisfies Config;
