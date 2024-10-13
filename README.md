@@ -1,29 +1,29 @@
-# Create T3 App
+# Proof-of-concept for a 3D Print on Demand platform
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+This is a proof-of-concept for a 3D Print on Demand platform.
 
-## What's next? How do I make an app with this?
+## Features
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+Check out this video for a quick overview of the platform:
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+[![3D Print on Demand platform](https://img.youtube.com/vi/1Q6Q6Q1Z9ZI/0.jpg)](https://www.youtube.com/watch?v=1Q6Q6Q1Z9ZI)
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Try it out
 
-## Learn More
+You can try out the platform at [https://poc-3d-print-on-demand.vercel.app/](https://poc-3d-print-on-demand.vercel.app/).
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+You can log in with any active Google account.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## Development
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+Run the following commands to start the development server:
 
-## How do I deploy this?
+```bash
+npm install
+npm run db:migrate
+npm run dev
+```
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+## License
+
+This project is offered as-is under the MIT license.
