@@ -27,9 +27,7 @@ export default async function RootLayout({
   return (
     <>
       <HeaderDashboard />
-      <main className="flex flex-col items-center justify-center bg-background text-primary">
-        {children}
-      </main>
+      {children}
       <Footer />
     </>
   );
