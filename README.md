@@ -14,6 +14,11 @@ You can try out the platform at [https://poc-3d-print-on-demand.vercel.app/](htt
 
 You can log in with any active Google account.
 
+You can use the following files to test the platform:
+
+- [AEROSPACE_TOOLING_SAMPLE_v4.step](./demo_resources/AEROSPACE_TOOLING_SAMPLE_v4.step)
+- [SpeedShape_v1.iges](./demo_resources/SpeedShape_v1.iges)
+
 ## Development
 
 Run the following commands to start the development server:
