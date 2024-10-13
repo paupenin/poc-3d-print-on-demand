@@ -14,7 +14,7 @@ import {
 } from "~/components/ui/file-upload";
 
 function getErrorMessage(error: FileError) {
-  switch (error.code) {
+  switch (error.code as FileErrorCode) {
     case FileErrorCode.FileInvalidType:
       return "File type is not allowed";
     case FileErrorCode.FileTooLarge:
@@ -24,7 +24,7 @@ function getErrorMessage(error: FileError) {
     case FileErrorCode.TooManyFiles:
       return "Too many files";
     default:
-      return "An error occurred";
+      return "An unknown error occurred";
   }
 }
 

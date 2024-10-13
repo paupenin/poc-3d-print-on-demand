@@ -2,8 +2,8 @@
 
 import { Trash2 as RemoveIcon } from "lucide-react";
 import {
-  Dispatch,
-  SetStateAction,
+  type Dispatch,
+  type SetStateAction,
   createContext,
   forwardRef,
   useCallback,
@@ -14,10 +14,10 @@ import {
 } from "react";
 import {
   ErrorCode as DropzoneErrorCode,
-  FileError as DropzoneFileError,
-  FileRejection as DropzoneFileRejection,
-  DropzoneOptions,
-  DropzoneState,
+  type FileError as DropzoneFileError,
+  type FileRejection as DropzoneFileRejection,
+  type DropzoneOptions,
+  type DropzoneState,
   useDropzone,
 } from "react-dropzone";
 import { buttonVariants } from "~/components/ui/button";
@@ -81,7 +81,9 @@ export const FileUploader = forwardRef<
       onValueChange,
       reSelect,
       orientation = "vertical",
-      onUploadError = () => {},
+      onUploadError = () => {
+        // by default do nothing
+      },
       children,
       dir,
       ...props
@@ -281,11 +283,7 @@ export const FileUploaderContent = forwardRef<
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div
-      className={cn("w-full px-1")}
-      ref={containerRef}
-      aria-description="content file holder"
-    >
+    <div className="w-full px-1" ref={containerRef}>
       <div
         {...props}
         ref={ref}
