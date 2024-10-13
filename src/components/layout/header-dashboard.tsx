@@ -89,10 +89,8 @@ export default function HeaderDashboard() {
               <>
                 <DropdownMenuSeparator />
                 {dropdownLinks.map((link) => (
-                  <DropdownMenuItem>
-                    <Link key={link.name} href={link.href}>
-                      {link.name}
-                    </Link>
+                  <DropdownMenuItem key={link.name}>
+                    <Link href={link.href}>{link.name}</Link>
                   </DropdownMenuItem>
                 ))}
               </>
