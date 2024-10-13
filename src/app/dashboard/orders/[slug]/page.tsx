@@ -7,14 +7,9 @@ export default async function DashboardOrderPage({
   params: { slug: string };
 }) {
   return (
-    <div className="container flex grow flex-col items-center justify-start">
+    <div className="flex h-full w-full grow flex-col items-center justify-start">
       {params.slug === "new" ? (
-        <div className="flex w-full flex-col items-center gap-4 py-6">
-          <h2 className="text-2xl font-semibold">
-            Upload files to create a quote
-          </h2>
-          <OrdersCreate />
-        </div>
+        <OrdersCreate />
       ) : (
         <>
           <p>Order: {params.slug}</p>
