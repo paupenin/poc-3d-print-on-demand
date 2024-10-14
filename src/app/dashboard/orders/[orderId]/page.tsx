@@ -4,15 +4,15 @@ import OrdersView from "~/components/features/orders/view";
 export default async function DashboardOrderPage({
   params,
 }: {
-  params: { slug: string };
+  params: { orderId: string };
 }) {
   return (
     <div className="flex h-full w-full grow flex-col items-center justify-start">
-      {params.slug === "new" ? (
+      {params.orderId === "new" ? (
         <OrdersCreate />
       ) : (
         <>
-          <p>Order: {params.slug}</p>
+          <p>Order: {params.orderId}</p>
           <OrdersView />
         </>
       )}

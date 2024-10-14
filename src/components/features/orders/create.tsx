@@ -5,8 +5,9 @@ import DropFiles from "~/components/custom/drop-files";
 import OrderItemBox from "~/components/order-creator/order-item-box";
 import PartConfiguration from "~/components/order-creator/part-configuration";
 import { Button } from "~/components/ui/button";
+import FileViewer from "~/components/viewer/file-viewer";
 import { OrderMaterial } from "~/lib/const";
-import { calculateOrderPrice, formatCurrency } from "~/lib/utils";
+import { calculateOrderPrice, fileToBase64, formatCurrency } from "~/lib/utils";
 
 // Config for the DropFiles component
 const uploadConfig = {
@@ -20,6 +21,9 @@ const uploadConfig = {
 
 type OrderItem = {
   file: File;
+  fileName: string;
+  fileBase64: string;
+  fileType: "step" | "iges";
   material: OrderMaterial;
   quantity: number;
   validated: boolean;
@@ -46,7 +50,7 @@ export default function OrdersCreate() {
             {orderItems.map((item, index) => (
               <OrderItemBox
                 key={index}
-                name={item.file.name}
+                name={item.fileName}
                 open={index === activeItem}
                 validated={item.validated}
                 onActiveItemChange={() => setActiveItem(index)}
@@ -75,29 +79,39 @@ export default function OrdersCreate() {
             <Button disabled={!canCheckout}>Checkout</Button>
           </div>
         </div>
-        <div className="w-full bg-primary md:grow">
-          {/* <FileViewer file={orderItems[activeItem]?.file} /> */}
+        <div className="aspect-square w-full bg-muted md:aspect-auto md:grow">
+          <FileViewer
+            file={orderItems[activeItem].file}
+            fileType={orderItems[activeItem].fileType}
+          />
         </div>
       </div>
     );
   }
 
   // If no active item, show the file uploader to create order items
-  const handleNextButton = () => {
+  const handleNextButton = async () => {
     if (!files || files.length !== 2) return;
 
-    // Set order items with default values
+    // Set order items with default values and file data
     setOrderItems(
-      files.map((file) => ({
-        // File object
-        file: file,
+      await Promise.all(
+        files.map(async (file) => {
+          return {
+            // File data
+            file,
+            fileName: file.name,
+            fileBase64: await fileToBase64(file),
+            fileType: file.name.endsWith(".step") ? "step" : "iges",
         // Default material is PLA
         material: OrderMaterial.PLA,
         // Default quantity is 1
         quantity: 1,
         // Validated by user
         validated: false,
-      })),
+          };
+        }),
+      ),
     );
 
     // Set active item to the first item to start file viewer

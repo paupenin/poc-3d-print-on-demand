@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { materialPrices, OrderMaterial } from "./const";
+import { materialPrices, type OrderMaterial } from "./const";
 
 // Helper function to merge Tailwind CSS classes
 export function cn(...inputs: ClassValue[]) {
@@ -28,5 +28,17 @@ export function formatCurrency(amount: number) {
     style: "currency",
     currency: "CHF",
     minimumFractionDigits: 2,
+  });
+}
+
+// Helper to convert a file to a base64 string
+export function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      resolve(reader.result as string);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
   });
 }
