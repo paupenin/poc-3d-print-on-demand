@@ -5,7 +5,7 @@
 // const ModelViewer = dynamic(() => import("./model-viewer"), { ssr: false });
 
 import "@google/model-viewer";
-import { CSSProperties } from "react";
+import { type CSSProperties } from "react";
 
 // Extend JSX's IntrinsicElements for 'model-viewer'
 declare global {

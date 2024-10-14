@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import DropFiles from "~/components/custom/drop-files";
 import OrderItemBox from "~/components/order-creator/order-item-box";
@@ -8,6 +9,7 @@ import { Button } from "~/components/ui/button";
 import FileViewer from "~/components/viewer/file-viewer";
 import { OrderMaterial } from "~/lib/const";
 import { calculateOrderPrice, fileToBase64, formatCurrency } from "~/lib/utils";
+import { api } from "~/trpc/react";
 
 // Config for the DropFiles component
 const uploadConfig = {
@@ -30,6 +32,7 @@ type OrderItem = {
 };
 
 export default function OrdersCreate() {
+  const router = useRouter();
   // Uploaded files
   const [files, setFiles] = useState<File[] | null>(null);
   // Order items
@@ -37,8 +40,26 @@ export default function OrdersCreate() {
   // Active item
   const [activeItem, setActiveItem] = useState<number | null>(null);
 
+  // Create order mutation
+  const createOrder = api.order.create.useMutation({
+    onSuccess: (data: { id: number } | undefined) => {
+      // console.log("Order created, redirecting to orders page", data);
+      if (!data) return;
+      router.push(`/dashboard/orders/${data.id}/checkout`);
+    },
+  });
+
   // If an active item is set, show the configuration form
   if (activeItem !== null && orderItems[activeItem] !== undefined) {
+    // Handle Checkout button (save order)
+    const handleCheckout = async () => {
+      // Save order items to the server
+      console.log("Order saved", orderItems);
+
+      createOrder.mutate({ items: orderItems });
+    };
+
+    // Check if all items are validated
     const canCheckout = orderItems.every((item) => item.validated);
 
     return (
@@ -76,7 +97,9 @@ export default function OrdersCreate() {
                 {formatCurrency(calculateOrderPrice(orderItems))}
               </span>
             </p>
-            <Button disabled={!canCheckout}>Checkout</Button>
+            <Button disabled={!canCheckout} onClick={handleCheckout}>
+              Checkout
+            </Button>
           </div>
         </div>
         <div className="aspect-square w-full bg-muted md:aspect-auto md:grow">
@@ -103,12 +126,12 @@ export default function OrdersCreate() {
             fileName: file.name,
             fileBase64: await fileToBase64(file),
             fileType: file.name.endsWith(".step") ? "step" : "iges",
-        // Default material is PLA
-        material: OrderMaterial.PLA,
-        // Default quantity is 1
-        quantity: 1,
-        // Validated by user
-        validated: false,
+            // Default material is PLA
+            material: OrderMaterial.PLA,
+            // Default quantity is 1
+            quantity: 1,
+            // Validated by user
+            validated: false,
           };
         }),
       ),

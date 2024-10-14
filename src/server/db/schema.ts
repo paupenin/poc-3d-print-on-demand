@@ -10,6 +10,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
+import { OrderStatus } from "~/lib/const";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -31,13 +32,53 @@ export const posts = createTable(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date()
+      () => new Date(),
     ),
   },
   (example) => ({
     createdByIdIdx: index("created_by_idx").on(example.createdById),
     nameIndex: index("name_idx").on(example.name),
-  })
+  }),
+);
+
+export const orders = createTable(
+  "order",
+  {
+    id: serial("id").primaryKey(),
+    status: varchar("status", { length: 255 })
+      .notNull()
+      .default(OrderStatus.Created),
+    price: integer("price").notNull(), // in cents
+    createdById: varchar("created_by", { length: 255 })
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date(),
+    ),
+  },
+  (order) => ({
+    createdByIdIdx: index("order_created_by_idx").on(order.createdById),
+  }),
+);
+
+export const orderItems = createTable(
+  "order_item",
+  {
+    id: serial("id").primaryKey(),
+    orderId: integer("order_id")
+      .notNull()
+      .references(() => orders.id),
+    fileName: varchar("file_name", { length: 255 }).notNull(),
+    fileUrl: varchar("file_url", { length: 255 }).notNull(),
+    quantity: integer("quantity"),
+    material: varchar("material", { length: 255 }),
+  },
+  (orderItem) => ({
+    orderIdIdx: index("order_item_order_id_idx").on(orderItem.orderId),
+  }),
 );
 
 export const users = createTable("user", {
@@ -84,7 +125,7 @@ export const accounts = createTable(
       columns: [account.provider, account.providerAccountId],
     }),
     userIdIdx: index("account_user_id_idx").on(account.userId),
-  })
+  }),
 );
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -107,7 +148,7 @@ export const sessions = createTable(
   },
   (session) => ({
     userIdIdx: index("session_user_id_idx").on(session.userId),
-  })
+  }),
 );
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -126,5 +167,5 @@ export const verificationTokens = createTable(
   },
   (vt) => ({
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
-  })
+  }),
 );
