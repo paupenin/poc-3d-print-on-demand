@@ -11,10 +11,7 @@ export default async function DashboardOrderPage({
       {params.orderId === "new" ? (
         <OrdersCreate />
       ) : (
-        <>
-          <p>Order: {params.orderId}</p>
-          <OrdersView />
-        </>
+        <OrdersView orderId={params.orderId} />
       )}
     </div>
   );

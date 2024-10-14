@@ -1,5 +1,5 @@
 /**
- * This file contains all the constants and enums used in the application.
+ * This file contains constants and helpers for orders.
  */
 
 // Type definitions for the Order entity
@@ -34,3 +34,36 @@ export const materialPrices = {
   [OrderMaterial.ABS]: 15000,
   [OrderMaterial.TPU]: 25000,
 };
+
+export function orderStatusLabel(status: OrderStatus) {
+  switch (status) {
+    case OrderStatus.Created:
+      return "Created";
+    case OrderStatus.PaymentPending:
+      return "Payment Pending";
+    case OrderStatus.PaymentFailed:
+      return "Payment Failed";
+    case OrderStatus.PaymentSucceeded:
+      return "Payment Succeeded";
+    case OrderStatus.OrderProcessing:
+      return "Order Processing";
+    case OrderStatus.OrderShipped:
+      return "Order Shipped";
+    case OrderStatus.OrderDelivered:
+      return "Order Delivered";
+    case OrderStatus.Cancelled:
+      return "Cancelled";
+    case OrderStatus.Refunded:
+      return "Refunded";
+    default:
+      return "Unknown";
+  }
+}
+
+export function orderPaymentPending(orderStatus: OrderStatus) {
+  return (
+    orderStatus === OrderStatus.Created ||
+    orderStatus === OrderStatus.PaymentPending ||
+    orderStatus === OrderStatus.PaymentFailed
+  );
+}

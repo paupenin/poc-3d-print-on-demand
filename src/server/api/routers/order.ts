@@ -102,4 +102,11 @@ export const orderRouter = createTRPCRouter({
         return order[0];
       });
     }),
+  // Get orders for the current user
+  getOrders: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.db.query.orders.findMany({
+      where: eq(orders.createdById, ctx.session.user.id),
+      orderBy: asc(orders.createdAt),
+    });
+  }),
 });

@@ -7,8 +7,8 @@ export default async function DashboardOrderCheckoutPage({
 }) {
   return (
     <div className="flex h-full w-full grow flex-col items-center justify-start">
-      <p>Checkout for Order: {params.orderId}</p>
-      <OrdersView />
+      <h1 className="text-2xl font-semibold">Checkout</h1>
+      <OrdersView orderId={params.orderId} />
     </div>
   );
 }
