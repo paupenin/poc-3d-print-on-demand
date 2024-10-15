@@ -6,7 +6,7 @@ export default async function DashboardOrderCheckoutPage({
   params: { orderId: string };
 }) {
   return (
-    <div className="flex h-full w-full grow flex-col items-center justify-start">
+    <div className="container mx-auto flex flex-col items-center justify-start p-4">
       <h1 className="text-2xl font-semibold">Checkout</h1>
       <OrdersView orderId={params.orderId} />
     </div>
