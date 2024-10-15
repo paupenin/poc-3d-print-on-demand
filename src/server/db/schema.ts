@@ -64,6 +64,14 @@ export const orders = createTable(
   }),
 );
 
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  createdBy: one(users, {
+    fields: [orders.createdById],
+    references: [users.id],
+  }),
+  items: many(orderItems),
+}));
+
 export const orderItems = createTable(
   "order_item",
   {
@@ -73,13 +81,17 @@ export const orderItems = createTable(
       .references(() => orders.id),
     fileName: varchar("file_name", { length: 255 }).notNull(),
     fileUrl: varchar("file_url", { length: 255 }).notNull(),
-    quantity: integer("quantity"),
-    material: varchar("material", { length: 255 }),
+    quantity: integer("quantity").notNull(),
+    material: varchar("material", { length: 255 }).notNull(),
   },
   (orderItem) => ({
     orderIdIdx: index("order_item_order_id_idx").on(orderItem.orderId),
   }),
 );
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, { fields: [orderItems.orderId], references: [orders.id] }),
+}));
 
 export const users = createTable("user", {
   id: varchar("id", { length: 255 })

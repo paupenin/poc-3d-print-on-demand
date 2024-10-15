@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { OrderStatus, orderStatusLabel } from "~/lib/const";
+import { orderStatusLabel } from "~/lib/const";
 import { formatCurrency } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
@@ -35,6 +35,7 @@ export default function OrdersList() {
               <TableRow>
                 <TableHead className="w-[100px]">Order</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Created By</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="text-right">Price</TableHead>
                 <TableHead className="w-[100px]"></TableHead>
@@ -44,9 +45,8 @@ export default function OrdersList() {
               {orders.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell className="font-semibold">#{order.id}</TableCell>
-                  <TableCell>
-                    {orderStatusLabel(order.status as OrderStatus)}
-                  </TableCell>
+                  <TableCell>{orderStatusLabel(order.status)}</TableCell>
+                  <TableCell>{order.createdBy.name}</TableCell>
                   <TableCell>
                     {order.createdAt.toLocaleString("de-CH")}
                   </TableCell>

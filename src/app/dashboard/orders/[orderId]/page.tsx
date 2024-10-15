@@ -7,7 +7,7 @@ export default async function DashboardOrderPage({
   params: { orderId: string };
 }) {
   return (
-    <div className="flex h-full w-full grow flex-col items-center justify-start">
+    <div className="container mx-auto flex grow flex-col items-center justify-start">
       {params.orderId === "new" ? (
         <OrdersCreate />
       ) : (

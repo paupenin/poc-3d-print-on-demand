@@ -35,7 +35,7 @@ export const materialPrices = {
   [OrderMaterial.TPU]: 25000,
 };
 
-export function orderStatusLabel(status: OrderStatus) {
+export function orderStatusLabel(status: OrderStatus | string) {
   switch (status) {
     case OrderStatus.Created:
       return "Created";
@@ -60,7 +60,7 @@ export function orderStatusLabel(status: OrderStatus) {
   }
 }
 
-export function orderPaymentPending(orderStatus: OrderStatus) {
+export function orderPaymentPending(orderStatus: OrderStatus | string) {
   return (
     orderStatus === OrderStatus.Created ||
     orderStatus === OrderStatus.PaymentPending ||

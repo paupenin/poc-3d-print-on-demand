@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { promises } from "fs";
 import path from "path";
 import { z } from "zod";
@@ -52,11 +52,11 @@ export const orderRouter = createTRPCRouter({
         input.items.map(async (item) => {
           // Create a new file from base64 in /public/uploads
           const storedFileName = `${Date.now()}-${item.fileName}`;
-          const storedFilePath = path.join("public", "uploads", storedFileName);
+          const storedFilePath = path.join("uploads", storedFileName);
 
           // Development save file to disk
           await promises.writeFile(
-            path.join(process.cwd(), storedFilePath),
+            path.join(process.cwd(), "public", storedFilePath),
             item.fileBase64.replace(/^data:.*;base64,/, ""),
             "base64",
           );
@@ -107,6 +107,25 @@ export const orderRouter = createTRPCRouter({
     return await ctx.db.query.orders.findMany({
       where: eq(orders.createdById, ctx.session.user.id),
       orderBy: asc(orders.createdAt),
+      with: { createdBy: true },
     });
   }),
+  // Get order by ID for the current user
+  getOrder: protectedProcedure
+    .input(
+      z.object({
+        orderId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const order = await ctx.db.query.orders.findFirst({
+        where: and(
+          eq(orders.id, input.orderId),
+          eq(orders.createdById, ctx.session.user.id),
+        ),
+        with: { items: true, createdBy: true },
+      });
+
+      return order ?? null;
+    }),
 });
