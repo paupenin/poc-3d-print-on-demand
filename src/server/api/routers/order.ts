@@ -1,5 +1,4 @@
 import { and, asc, eq } from "drizzle-orm";
-import { promises } from "fs";
 import path from "path";
 import { z } from "zod";
 import { OrderMaterial, orderPaymentPending, OrderStatus } from "~/lib/const";
@@ -7,6 +6,7 @@ import { calculateOrderPrice } from "~/lib/utils";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { orderItems, orders } from "~/server/db/schema";
+import { storeFile } from "~/server/storage/file";
 
 // const MAX_FILE_SIZE = 1024 * 1024 * 4; // 4MB
 const ACCEPTED_EXTENSIONS = [".iges", ".step"];
@@ -50,25 +50,17 @@ export const orderRouter = createTRPCRouter({
       // Store files in the server
       const items = await Promise.all(
         input.items.map(async (item) => {
-          // Create a new file from base64 in /public/uploads
-          const storedFileName = `${Date.now()}-${item.fileName}`;
-          const storedFilePath = path.join(
-            "uploads",
-            "order-items",
-            storedFileName,
-          );
-
-          // Development save file to disk
-          await promises.writeFile(
-            path.join(process.cwd(), "public", storedFilePath),
-            item.fileBase64.replace(/^data:.*;base64,/, ""),
-            "base64",
+          // Store file
+          const fileUrl = await storeFile(
+            `${Date.now()}-${item.fileName}`,
+            item.fileBase64,
+            "uploads/order-items",
           );
 
           // Return item with the file URL
           return {
             fileName: item.fileName,
-            fileUrl: "/" + storedFilePath,
+            fileUrl: fileUrl,
             material: item.material,
             quantity: item.quantity,
           };
@@ -202,15 +194,11 @@ export const orderRouter = createTRPCRouter({
         throw new Error("Order is not pending payment");
       }
 
-      // Store file in the server
-      const storedFileName = `${Date.now()}-${order.id}-payment.pdf`;
-      const storedFilePath = path.join("uploads", "payments", storedFileName);
-
-      // Development save file to disk
-      await promises.writeFile(
-        path.join(process.cwd(), "public", storedFilePath),
-        input.file.replace(/^data:.*;base64,/, ""),
-        "base64",
+      // Store payment file
+      const fileUrl = await storeFile(
+        `${Date.now()}-${order.id}-payment.pdf`,
+        input.file,
+        "uploads/payments",
       );
 
       // Update the order with the payment receipt
@@ -218,7 +206,7 @@ export const orderRouter = createTRPCRouter({
         .update(orders)
         .set({
           status: OrderStatus.PaymentProcessing,
-          paymentReceiptUrl: "/" + storedFilePath,
+          paymentReceiptUrl: fileUrl,
         })
         .where(eq(orders.id, order.id));
     }),
