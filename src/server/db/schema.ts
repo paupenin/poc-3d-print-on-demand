@@ -49,6 +49,7 @@ export const orders = createTable(
       .notNull()
       .default(OrderStatus.Created),
     price: integer("price").notNull(), // in cents
+    paymentReceiptUrl: varchar("payment_receipt_url", { length: 255 }),
     createdById: varchar("created_by", { length: 255 })
       .notNull()
       .references(() => users.id),

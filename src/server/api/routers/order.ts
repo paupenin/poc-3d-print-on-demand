@@ -2,7 +2,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { promises } from "fs";
 import path from "path";
 import { z } from "zod";
-import { OrderMaterial } from "~/lib/const";
+import { OrderMaterial, orderPaymentPending, OrderStatus } from "~/lib/const";
 import { calculateOrderPrice } from "~/lib/utils";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -52,7 +52,11 @@ export const orderRouter = createTRPCRouter({
         input.items.map(async (item) => {
           // Create a new file from base64 in /public/uploads
           const storedFileName = `${Date.now()}-${item.fileName}`;
-          const storedFilePath = path.join("uploads", storedFileName);
+          const storedFilePath = path.join(
+            "uploads",
+            "order-items",
+            storedFileName,
+          );
 
           // Development save file to disk
           await promises.writeFile(
@@ -127,5 +131,95 @@ export const orderRouter = createTRPCRouter({
       });
 
       return order ?? null;
+    }),
+  // Process payment for an order
+  processPayment: protectedProcedure
+    .input(
+      z.object({
+        orderId: z.number(),
+        number: z.string().length(16),
+        expiration: z.string().length(5), // MM/YY
+        cvv: z.string().length(3),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Get the order
+      const order = await ctx.db.query.orders.findFirst({
+        where: and(
+          eq(orders.id, input.orderId),
+          eq(orders.createdById, ctx.session.user.id),
+        ),
+      });
+
+      // Validate that the order exists
+      if (!order) {
+        throw new Error("Order not found");
+      }
+
+      // Validate that the order is in the correct status
+      if (!orderPaymentPending(order.status)) {
+        throw new Error("Order is not pending payment");
+      }
+
+      // Process the payment
+      // This is a fake payment processor
+      // In a real-world scenario, you would use a payment gateway
+      // and handle the payment asynchronously.
+      // Beep boop, payment successful 🤖
+
+      // Update the order with the payment receipt
+      return await ctx.db
+        .update(orders)
+        .set({
+          status: OrderStatus.PaymentSucceeded,
+        })
+        .where(eq(orders.id, order.id));
+    }),
+  // Upload proof of payment
+  uploadProofOfPayment: protectedProcedure
+    .input(
+      z.object({
+        orderId: z.number(),
+        file: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Get the order
+      const order = await ctx.db.query.orders.findFirst({
+        where: and(
+          eq(orders.id, input.orderId),
+          eq(orders.createdById, ctx.session.user.id),
+        ),
+      });
+
+      // Validate that the order exists
+      if (!order) {
+        throw new Error("Order not found");
+      }
+
+      // Validate that the order is in the correct status
+      if (!orderPaymentPending(order.status)) {
+        throw new Error("Order is not pending payment");
+      }
+
+      // Store file in the server
+      const storedFileName = `${Date.now()}-${order.id}-payment.pdf`;
+      const storedFilePath = path.join("uploads", "payments", storedFileName);
+
+      // Development save file to disk
+      await promises.writeFile(
+        path.join(process.cwd(), "public", storedFilePath),
+        input.file.replace(/^data:.*;base64,/, ""),
+        "base64",
+      );
+
+      // Update the order with the payment receipt
+      return await ctx.db
+        .update(orders)
+        .set({
+          status: OrderStatus.PaymentProcessing,
+          paymentReceiptUrl: "/" + storedFilePath,
+        })
+        .where(eq(orders.id, order.id));
     }),
 });

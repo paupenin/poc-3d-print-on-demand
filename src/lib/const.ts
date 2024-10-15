@@ -8,6 +8,7 @@ export enum OrderStatus {
   Created = "created",
   // Different stages of the payment process
   PaymentPending = "payment_pending",
+  PaymentProcessing = "payment_processing",
   PaymentFailed = "payment_failed",
   PaymentSucceeded = "payment_succeeded",
   // Different stages of the order processing
@@ -36,11 +37,13 @@ export const materialPrices = {
 };
 
 export function orderStatusLabel(status: OrderStatus | string) {
-  switch (status) {
+  switch (status as OrderStatus) {
     case OrderStatus.Created:
       return "Created";
     case OrderStatus.PaymentPending:
       return "Payment Pending";
+    case OrderStatus.PaymentProcessing:
+      return "Payment Processing";
     case OrderStatus.PaymentFailed:
       return "Payment Failed";
     case OrderStatus.PaymentSucceeded:
@@ -62,8 +65,8 @@ export function orderStatusLabel(status: OrderStatus | string) {
 
 export function orderPaymentPending(orderStatus: OrderStatus | string) {
   return (
-    orderStatus === OrderStatus.Created ||
-    orderStatus === OrderStatus.PaymentPending ||
-    orderStatus === OrderStatus.PaymentFailed
+    (orderStatus as OrderStatus) === OrderStatus.Created ||
+    (orderStatus as OrderStatus) === OrderStatus.PaymentPending ||
+    (orderStatus as OrderStatus) === OrderStatus.PaymentFailed
   );
 }

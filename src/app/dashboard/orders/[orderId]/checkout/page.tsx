@@ -1,4 +1,4 @@
-import OrdersView from "~/components/features/orders/view";
+import OrdersCheckout from "~/components/features/orders/checkout";
 
 export default async function DashboardOrderCheckoutPage({
   params,
@@ -7,8 +7,7 @@ export default async function DashboardOrderCheckoutPage({
 }) {
   return (
     <div className="container mx-auto flex flex-col items-center justify-start p-4">
-      <h1 className="text-2xl font-semibold">Checkout</h1>
-      <OrdersView orderId={params.orderId} />
+      <OrdersCheckout orderId={params.orderId} />
     </div>
   );
 }
