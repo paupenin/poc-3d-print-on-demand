@@ -81,8 +81,9 @@ export default function HeaderDashboard() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {/* This could be a link to the user's profile in the real app. */}
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              <Link href="/dashboard/profile">My Profile</Link>
+            </DropdownMenuLabel>
 
             {/* Drop down links, if any. */}
             {dropdownLinks.length !== 0 && (

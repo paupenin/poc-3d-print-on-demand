@@ -87,8 +87,12 @@ export const users = createTable("user", {
   image: varchar("image", { length: 255 }),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
+  address: one(userAddress, {
+    fields: [users.id],
+    references: [userAddress.userId],
+  }),
 }));
 
 export const accounts = createTable(
@@ -161,3 +165,28 @@ export const verificationTokens = createTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 );
+
+export const userAddress = createTable(
+  "user_address",
+  {
+    id: serial("id").primaryKey(),
+    userId: varchar("user_id", { length: 255 })
+      .notNull()
+      .references(() => users.id),
+    company: varchar("company", { length: 255 }).notNull(),
+    street: varchar("street", { length: 255 }).notNull(),
+    city: varchar("city", { length: 255 }).notNull(),
+    state: varchar("state", { length: 255 }).notNull(),
+    country: varchar("country", { length: 255 }).notNull(),
+  },
+  (address) => ({
+    userIdIdx: index("user_address_user_id_idx").on(address.userId),
+  }),
+);
+
+export const userAddressRelations = relations(userAddress, ({ one }) => ({
+  user: one(users, {
+    fields: [userAddress.userId],
+    references: [users.id],
+  }),
+}));

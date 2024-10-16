@@ -5,6 +5,7 @@ import { useState } from "react";
 import DropFiles from "~/components/custom/drop-files";
 import OrderItemBox from "~/components/order-creator/order-item-box";
 import PartConfiguration from "~/components/order-creator/part-configuration";
+import ProfileAddress from "~/components/profile/profile-address";
 import { Button } from "~/components/ui/button";
 import FileViewer from "~/components/viewer/file-viewer";
 import { OrderMaterial } from "~/lib/const";
@@ -40,6 +41,9 @@ export default function OrdersCreate() {
   // Active item
   const [activeItem, setActiveItem] = useState<number | null>(null);
 
+  // Get profile (with address)
+  const [profile] = api.profile.getProfile.useSuspenseQuery();
+
   // Create order mutation
   const createOrder = api.order.create.useMutation({
     onSuccess: (data: { id: number } | undefined) => {
@@ -48,6 +52,18 @@ export default function OrdersCreate() {
       router.push(`/dashboard/orders/${data.id}/checkout`);
     },
   });
+
+  // If the user has no address, show the address form
+  if (!profile?.address) {
+    return (
+      <div className="flex w-full max-w-2xl flex-col items-center gap-6 py-6">
+        <h2 className="text-lg font-semibold">Address</h2>
+        <p>Prior to creating an order, please fill in your address.</p>
+        <p>This information will be used for shipping and billing purposes.</p>
+        <ProfileAddress />
+      </div>
+    );
+  }
 
   // If an active item is set, show the configuration form
   if (activeItem !== null && orderItems[activeItem] !== undefined) {
