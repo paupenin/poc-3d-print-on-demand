@@ -15,6 +15,13 @@
       "when": 1729014283227,
       "tag": "0001_next_daimon_hellstrom",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1729077104744,
+      "tag": "0002_unique_stone_men",
+      "breakpoints": true
     }
   ]
 }
