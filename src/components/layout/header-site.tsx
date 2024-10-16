@@ -8,7 +8,7 @@ export default async function HeaderSite() {
   const session = await getServerAuthSession();
 
   return (
-    <header className="sticky top-0 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 md:px-6">
+    <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 md:px-6">
       <nav className="flex flex-row items-center gap-6 text-sm font-medium">
         <Link
           href="/"

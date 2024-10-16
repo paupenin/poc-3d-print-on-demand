@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { OrderStatus } from "~/lib/const";
 import { api } from "~/trpc/react";
 
 export default function CardForm({ orderId }: { orderId: number }) {
@@ -16,10 +17,14 @@ export default function CardForm({ orderId }: { orderId: number }) {
 
   const processPayment = api.order.processPayment.useMutation({
     onSuccess: async () => {
+      // Redirect to the order view page
+      router.push(
+        `/dashboard/orders/${orderId}?${OrderStatus.PaymentSucceeded}=true`,
+      );
       // Invalidate order query (to refetch the order with the new status)
       await trpcUtils.order.getOrder.invalidate({ orderId });
-      // Redirect to the order view page
-      router.push(`/dashboard/orders/${orderId}`);
+      // Invalidate the order list query (to refetch the list with the new order status)
+      await trpcUtils.order.getOrders.invalidate();
     },
   });
 

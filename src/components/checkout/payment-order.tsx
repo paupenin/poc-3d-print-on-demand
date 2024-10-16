@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { OrderStatus } from "~/lib/const";
 import { fileToBase64 } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import DropFiles from "../custom/drop-files";
@@ -23,10 +24,14 @@ export default function PaymentOrder({ orderId }: { orderId: number }) {
 
   const uploadProofOfPayment = api.order.uploadProofOfPayment.useMutation({
     onSuccess: async () => {
+      // Redirect to the order view page
+      router.push(
+        `/dashboard/orders/${orderId}?${OrderStatus.PaymentProcessing}=true`,
+      );
       // Invalidate order query (to refetch the order with the new status)
       await trpcUtils.order.getOrder.invalidate({ orderId });
-      // Redirect to the order view page
-      router.push(`/dashboard/orders/${orderId}`);
+      // Invalidate the order list query (to refetch the list with the new order status)
+      await trpcUtils.order.getOrders.invalidate();
     },
   });
 

@@ -54,7 +54,7 @@ export default function OrdersCreate() {
     // Handle Checkout button (save order)
     const handleCheckout = async () => {
       // Save order items to the server
-      console.log("Order saved", orderItems);
+      // console.log("Order saved", orderItems);
 
       createOrder.mutate({ items: orderItems });
     };
